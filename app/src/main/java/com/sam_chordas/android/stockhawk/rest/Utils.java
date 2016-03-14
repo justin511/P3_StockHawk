@@ -3,6 +3,7 @@ package com.sam_chordas.android.stockhawk.rest;
 import android.content.ContentProviderOperation;
 import android.util.Log;
 
+import com.sam_chordas.android.stockhawk.data.HistoryColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 
@@ -35,7 +36,7 @@ public class Utils {
         if (count == 1){
           jsonObject = jsonObject.getJSONObject("results")
               .getJSONObject("quote");
-          batchOperations.add(buildBatchOperation(jsonObject));//
+          batchOperations.add(buildQuoteBatchOperation(jsonObject));//
         // if there is more than 1 result, data is stored under int within quote
         } else{
           resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
@@ -43,7 +44,7 @@ public class Utils {
           if (resultsArray != null && resultsArray.length() != 0){
             for (int i = 0; i < resultsArray.length(); i++){
               jsonObject = resultsArray.getJSONObject(i);
-              batchOperations.add(buildBatchOperation(jsonObject));
+              batchOperations.add(buildQuoteBatchOperation(jsonObject));
             }
           }
         }
@@ -53,6 +54,37 @@ public class Utils {
     }
     return batchOperations;
   }
+
+  // todo create historyJsonToContentVals method
+  public static ArrayList historyJsonToContentVals(String JSON) {
+    ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
+    JSONObject jsonObject = null;
+    JSONArray resultsArray = null;
+    Log.i(LOG_TAG, "GET historyJson: " +JSON);
+    try {
+      jsonObject = new JSONObject(JSON);
+      if (jsonObject != null && jsonObject.length() != 0) {
+        jsonObject = jsonObject.getJSONObject("query");
+        int count = jsonObject.getInt("count");
+        if (count == 1) {
+          jsonObject = jsonObject.getJSONObject("results").getJSONObject("quote");
+          batchOperations.add(buildHistoryBatchOperation(jsonObject));
+        } else {
+          resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
+          if (resultsArray != null && resultsArray.length() != 0) {
+            for (int i = 0; i < resultsArray.length(); i++) {
+              jsonObject = resultsArray.getJSONObject(i);
+              batchOperations.add(buildHistoryBatchOperation(jsonObject));
+            }
+          }
+        }
+      }
+    } catch (JSONException e) {
+      Log.e(LOG_TAG, "String to JSON failed: " + e);
+    }
+    return batchOperations;
+  }
+
 
   // two digits after decimal point
   public static String truncateBidPrice(String bidPrice){
@@ -78,10 +110,10 @@ public class Utils {
     return change;
   }
 
-  public static ContentProviderOperation buildBatchOperation(JSONObject jsonObject){
+  public static ContentProviderOperation buildQuoteBatchOperation(JSONObject jsonObject){
     // content://com.sam_chordas.android.stockhawk.data.QuoteProvider.quotes
     ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
-        QuoteProvider.Quotes.CONTENT_URI);
+            QuoteProvider.Quotes.CONTENT_URI);
     try {
       String change = jsonObject.getString("Change");
       builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol"));
@@ -101,4 +133,54 @@ public class Utils {
     }
     return builder.build();
   }
+
+
+  // todo create historyJsonToContentVals method
+  public static ContentProviderOperation buildHistoryBatchOperation(JSONObject jsonObject) {
+    ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+            QuoteProvider.History.CONTENT_URI);
+    try {
+      builder.withValue(HistoryColumns.SYMBOL, jsonObject.getString("Symbol"));
+      builder.withValue(HistoryColumns.DATE, jsonObject.getString("Date"));
+      builder.withValue(HistoryColumns.CLOSE, jsonObject.getString("Close"));
+      builder.withValue(HistoryColumns.VOLUME, jsonObject.getString("Volume"));
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return builder.build();
+  }
+
+  /***
+   * Used in ChartCard class to set appropriate max & min graph limits
+   * @param numbers
+   * @return
+   */
+  public static float getLargestInArray(float[] numbers) {
+    float largest = numbers[0];
+
+    for (int i=1; i<numbers.length; i++) {
+      if (numbers[i] > largest) {
+        largest = numbers[i];
+      }
+    }
+
+    return largest;
+  }
+
+  public static float getSmallestInArray(float[] numbers) {
+    float smallest = numbers[0];
+
+    for (int i=1; i<numbers.length; i++) {
+      if (numbers[i] < smallest) {
+        smallest = numbers[i];
+      }
+    }
+
+    return smallest;
+  }
+
+
+
+
+
 }

@@ -57,9 +57,19 @@ public class StockTaskService extends GcmTaskService{
     try{
       // Base URL for the Yahoo query
       urlStringBuilder.append("https://query.yahooapis.com/v1/public/yql?q=");
-      urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.quotes where symbol "
-        + "in (", "UTF-8"));
-      // https://query.yahooapis.com/v1/public/yql?q=select+*+from+yahoo.finance.quotes+where+symbol+in+%28
+
+      if (params.getTag().equals("init") || params.getTag().equals("periodic") ||
+              params.getTag().equals("add")) {
+        // https://query.yahooapis.com/v1/public/yql?q=select+*+from+yahoo.finance.quotes+where+symbol+in+%28
+        urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.quotes where symbol "
+                + "in (", "UTF-8"));
+      } else if (params.getTag().equals("history")) {
+        // https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22YHOO%22%20and%20startDate%20%3D%20%222016-03-02%22%20and%20endDate%20%3D%20%222016-03-09%22&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
+        // select * from yahoo.finance.historicaldata where symbol = "YHOO" and startDate = "2016-03-02" and endDate = "2016-03-09"
+        urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.historicaldata where "
+                + "symbol = ", "UTF-8"));
+      }
+
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }
@@ -103,7 +113,22 @@ public class StockTaskService extends GcmTaskService{
       } catch (UnsupportedEncodingException e){
         e.printStackTrace();
       }
+    } else if (params.getTag().equals("history")){
+      isUpdate = false;
+      // https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22YHOO%22%20and%20startDate%20%3D%20%222016-03-02%22%20and%20endDate%20%3D%20%222016-03-09%22&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
+      // select * from yahoo.finance.historicaldata where symbol = "YHOO" and startDate = "2016-03-02" and endDate = "2016-03-09"
+      String stockInput = params.getExtras().getString("symbol");
+      // todo when tag equals history get correct dates - previous 10 days or so
+      // todo are holidays missing? or same price
+      try {
+        urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\"", "UTF-8"));
+        urlStringBuilder.append(URLEncoder.encode(" and startDate = \"" + "2016-03-02" + "\"", "UTF-8"));
+        urlStringBuilder.append(URLEncoder.encode(" and endDate = \"" + "2016-03-10" + "\"", "UTF-8"));
+      } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
+      }
     }
+
     // finalize the URL for the API query.
     // &format=json&&diagnostics=true&env=store://datatables.org/alltableswithkeys
     urlStringBuilder.append("&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables."
@@ -115,28 +140,33 @@ public class StockTaskService extends GcmTaskService{
 
     if (urlStringBuilder != null){
       urlString = urlStringBuilder.toString();
-
       Log.e(LOG_TAG, "URL String: " + urlString); // debug purpose
 
       try{
         getResponse = fetchData(urlString);
         result = GcmNetworkManager.RESULT_SUCCESS;
+
         try {
-          ContentValues contentValues = new ContentValues();
-          // update ISCURRENT to 0 (false) so new data is current
-          // if tag is "add", isUpdate = false
-          // if tag is "init", isUpdate = true
+          // if tag is "init" or "periodic", isUpdate = true
           if (isUpdate){
-            contentValues.put(QuoteColumns.ISCURRENT, 0);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(QuoteColumns.ISCURRENT, 0);   // update ISCURRENT to 0 (false) so new data is current
             mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
                 null, null);
           }
           // update database
-          mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-              Utils.quoteJsonToContentVals(getResponse));
+          if (params.getTag().equals("init") || params.getTag().equals("periodic") || params.getTag().equals("add")) {
+            mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+                    Utils.quoteJsonToContentVals(getResponse));
+          } else {
+            // todo when tag equals history
+            mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+                    Utils.historyJsonToContentVals(getResponse));
+          }
         }catch (RemoteException | OperationApplicationException e){
           Log.e(LOG_TAG, "Error applying batch insert", e);
         }
+
       } catch (IOException e){
         e.printStackTrace();
       }

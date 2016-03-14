@@ -22,8 +22,12 @@ public class StockIntentService extends IntentService {
   @Override protected void onHandleIntent(Intent intent) {
     Log.d(StockIntentService.class.getSimpleName(), "Stock Intent Service");
     StockTaskService stockTaskService = new StockTaskService(this);
+
     Bundle args = new Bundle();
+
     if (intent.getStringExtra("tag").equals("add")){
+      args.putString("symbol", intent.getStringExtra("symbol"));
+    } else if (intent.getStringExtra("tag").equals("history")) {
       args.putString("symbol", intent.getStringExtra("symbol"));
     }
     // We can call OnRunTask from the intent service to force it to run immediately instead of
