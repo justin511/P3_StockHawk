@@ -1,4 +1,4 @@
-# Udacity Android Nanodegree - Project 3
+# Udacity Android Developer Nanodegree - Project 3
 
 ## Project Overview
 
