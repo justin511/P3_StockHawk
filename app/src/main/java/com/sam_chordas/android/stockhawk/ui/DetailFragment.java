@@ -46,7 +46,7 @@ public class DetailFragment extends Fragment {
 //        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         // todo pass symbol through constructor
-        (new ChartCard((CardView) layout.findViewById(R.id.card1), getContext())).init();
+        (new ChartCard((CardView) layout.findViewById(R.id.card1), getContext(), mSymbol)).init();
 
 
         return layout;

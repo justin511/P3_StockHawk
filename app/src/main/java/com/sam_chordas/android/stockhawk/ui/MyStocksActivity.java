@@ -81,6 +81,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     }
     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
     getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
     mCursorAdapter = new QuoteCursorAdapter(this, null);  // cursor is null now, but gets swapped later

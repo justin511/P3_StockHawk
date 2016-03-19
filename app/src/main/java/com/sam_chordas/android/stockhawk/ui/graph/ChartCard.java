@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,6 +27,8 @@ import com.sam_chordas.android.stockhawk.data.HistoryColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 
+import java.util.ArrayList;
+
 /**
  * Created by justinmae on 3/7/16.
  */
@@ -35,35 +38,42 @@ import com.sam_chordas.android.stockhawk.rest.Utils;
 
 public class ChartCard extends CardController implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private final String LOG_TAG = ChartCard.class.getSimpleName();
+
+    private static final int HISTORY_LOADER_ID = 0;
 
     private final LineChartView mChart;
 
-
     private final Context mContext;
 
+    private String mSymbol;
 
-    private final String[] mLabels= {"Jan", "Fev", "Mar", "Apr", "Jun", "May", "Jul", "Aug", "Sep"};
-    private final float[][] mValues = {{3.5f, 4.7f, 4.3f, 8f, 6.5f, 9.9f, 7f, 8.3f, 7.0f},
-            {4.5f, 2.5f, 2.5f, 9f, 4.5f, 9.5f, 5f, 8.3f, 1.8f}};
 
-//    private final String[] mLabels = {"Mar 3", "Mar 4", "Mar 5", "Mar 6"};
-//    private final float[][] mValues = {{33.0f,33.4f,33.2f,33.4f},
-//            {10f,20f,30f,10f}};
+//    private final String[] mLabels= {"Jan", "Fev", "Mar", "Apr", "Jun", "May", "Jul", "Aug", "Sep"};
+//    private final float[][] mValues = {{3.5f, 4.7f, 4.3f, 8f, 6.5f, 9.9f, 7f, 8.3f, 7.0f},
+//            {4.5f, 2.5f, 2.5f, 9f, 4.5f, 9.5f, 5f, 8.3f, 1.8f}};
+
+    private String[] mLabels = {"Mar 3", "Mar 4", "Mar 5", "Mar 6"};
+    private float[] mValues = {33.0f,33.4f,33.2f,33.4f};
+
 
     private Tooltip mTip;
 
     private Runnable mBaseAction;
 
 
-    public ChartCard(CardView card, Context context){
+    public ChartCard(CardView card, Context context, String symbol){
         super(card);
 
         mContext = context;
         mChart = (LineChartView) card.findViewById(R.id.chart1);
+        mSymbol = symbol;
     }
 
+//    getLoaderManager
+
 // todo get cursor data
-        
+
     // just need to query for date and price
 //    Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
 //            new String[] { QuoteColumns.SYMBOL }, QuoteColumns.SYMBOL + "= ?",
@@ -120,7 +130,7 @@ public class ChartCard extends CardController implements LoaderManager.LoaderCal
 //        mChart.addData(dataset);
 
         // yellow lines
-        LineSet dataset = new LineSet(mLabels, mValues[0]);
+        LineSet dataset = new LineSet(mLabels, mValues);
         dataset.setColor(Color.parseColor("#b3b5bb"))
                 .setFill(Color.parseColor("#2d374c"))
                 .setDotsColor(Color.parseColor("#ffc755"))
@@ -131,8 +141,8 @@ public class ChartCard extends CardController implements LoaderManager.LoaderCal
         // Chart
         mChart.setBorderSpacing(Tools.fromDpToPx(15))
                 .setAxisBorderValues(
-                        (int) Utils.getSmallestInArray(mValues[0]) - 10,
-                        (int) Utils.getLargestInArray(mValues[0]) + 10)
+                        (int) Utils.getSmallestInArray(mValues) - 10,
+                        (int) Utils.getLargestInArray(mValues) + 10)
                 .setYLabels(AxisController.LabelPosition.OUTSIDE)
                 .setLabelsColor(Color.parseColor("#6a84c3"))
                 .setXAxis(false)
@@ -144,7 +154,7 @@ public class ChartCard extends CardController implements LoaderManager.LoaderCal
             @Override
             public void run() {
                 mBaseAction.run();
-                mTip.prepare(mChart.getEntriesArea(0).get(2), mValues[0][2]);
+                mTip.prepare(mChart.getEntriesArea(0).get(2), mValues[2]);
                 mChart.showTooltip(mTip, true);
             }
         };
@@ -162,13 +172,16 @@ public class ChartCard extends CardController implements LoaderManager.LoaderCal
         super.update();
 
         mChart.dismissAllTooltips();
-        if (firstStage) {
-            mChart.updateValues(0, mValues[1]);
-            mChart.updateValues(1, mValues[1]);
-        }else{
-            mChart.updateValues(0, mValues[0]);
-            mChart.updateValues(1, mValues[0]);
-        }
+//        if (firstStage) {
+//            mChart.updateValues(0, mValues[1]);
+//            mChart.updateValues(1, mValues[1]);
+//        }else{
+//            mChart.updateValues(0, mValues[0]);
+//            mChart.updateValues(1, mValues[0]);
+//        }
+
+        mChart.updateValues(0, mValues);
+        mChart.updateValues(1, mValues);
         mChart.getChartAnimation().setEndAction(mBaseAction);
         mChart.notifyDataUpdate();
     }
@@ -191,13 +204,38 @@ public class ChartCard extends CardController implements LoaderManager.LoaderCal
                 new String[] {HistoryColumns._ID, HistoryColumns.SYMBOL, HistoryColumns.DATE,
                     HistoryColumns.CLOSE, HistoryColumns.VOLUME},
                 HistoryColumns.SYMBOL + " = ?",
-                new String[] {"YHOO"},  // todo use mSymbol
+                new String[] {mSymbol},  // todo use mSymbol
                 null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // todo swap
+        if (data != null && data.getCount() != 0) {
+
+            ArrayList<String> labelsArrayList = new ArrayList<>();
+            ArrayList<Float> valuesArrayList = new ArrayList<>();
+
+            while (data.moveToNext()) {
+                labelsArrayList.add(data.getString(data.getColumnIndex(HistoryColumns.DATE)));
+                valuesArrayList.add(Float.parseFloat(data.getString(data.getColumnIndex(HistoryColumns.CLOSE))));
+            }
+
+            mLabels = (String[]) labelsArrayList.toArray();
+            mValues = null;
+
+            int i = 0;
+            for (Float f : valuesArrayList) {
+                mValues[i++] = (f != null ? f : f.NaN);
+            }
+
+            Log.i(LOG_TAG, "onLoadFinished mLabels: " + mLabels.toString());
+            Log.i(LOG_TAG, "onLoadFinished mValues: " + mValues.toString());
+            // todo check if this is working
+
+            mChart.notifyDataUpdate();
+        }
+
 
     }
 

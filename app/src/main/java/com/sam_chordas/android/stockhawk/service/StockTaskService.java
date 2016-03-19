@@ -122,8 +122,8 @@ public class StockTaskService extends GcmTaskService{
       // todo are holidays missing? or same price
       try {
         urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\"", "UTF-8"));
-        urlStringBuilder.append(URLEncoder.encode(" and startDate = \"" + "2016-03-02" + "\"", "UTF-8"));
-        urlStringBuilder.append(URLEncoder.encode(" and endDate = \"" + "2016-03-10" + "\"", "UTF-8"));
+        urlStringBuilder.append(URLEncoder.encode(" and startDate = \"" + "2016-03-10" + "\"", "UTF-8"));
+        urlStringBuilder.append(URLEncoder.encode(" and endDate = \"" + "2016-03-18" + "\"", "UTF-8"));
       } catch (UnsupportedEncodingException e) {
         e.printStackTrace();
       }
