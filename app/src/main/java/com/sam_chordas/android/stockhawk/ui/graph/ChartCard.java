@@ -1,17 +1,11 @@
 package com.sam_chordas.android.stockhawk.ui.graph;
 
 import android.animation.PropertyValuesHolder;
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -23,11 +17,7 @@ import com.db.chart.view.Tooltip;
 import com.db.chart.view.animation.Animation;
 import com.db.chart.view.animation.easing.BounceEase;
 import com.sam_chordas.android.stockhawk.R;
-import com.sam_chordas.android.stockhawk.data.HistoryColumns;
-import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
-
-import java.util.ArrayList;
 
 /**
  * Created by justinmae on 3/7/16.
@@ -36,13 +26,13 @@ import java.util.ArrayList;
 
 
 
-public class ChartCard extends CardController implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ChartCard extends CardController {
 
     private final String LOG_TAG = ChartCard.class.getSimpleName();
 
-    private static final int HISTORY_LOADER_ID = 0;
+    public static final int CURSOR_LOADER_ID = 1;
 
-    private final LineChartView mChart;
+    private LineChartView mChart;
 
     private final Context mContext;
 
@@ -68,9 +58,23 @@ public class ChartCard extends CardController implements LoaderManager.LoaderCal
         mContext = context;
         mChart = (LineChartView) card.findViewById(R.id.chart1);
         mSymbol = symbol;
+
+
     }
 
-//    getLoaderManager
+    public void setmLabels(String[] mLabels) {
+        this.mLabels = mLabels;
+    }
+
+    public void setmValues(float[] mValues) {
+        this.mValues = mValues;
+    }
+
+    //    getLoaderManager
+
+//    getParent
+//    getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+
 
 // todo get cursor data
 
@@ -198,49 +202,7 @@ public class ChartCard extends CardController implements LoaderManager.LoaderCal
     }
 
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(mContext, QuoteProvider.History.CONTENT_URI,
-                new String[] {HistoryColumns._ID, HistoryColumns.SYMBOL, HistoryColumns.DATE,
-                    HistoryColumns.CLOSE, HistoryColumns.VOLUME},
-                HistoryColumns.SYMBOL + " = ?",
-                new String[] {mSymbol},  // todo use mSymbol
-                null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // todo swap
-        if (data != null && data.getCount() != 0) {
-
-            ArrayList<String> labelsArrayList = new ArrayList<>();
-            ArrayList<Float> valuesArrayList = new ArrayList<>();
-
-            while (data.moveToNext()) {
-                labelsArrayList.add(data.getString(data.getColumnIndex(HistoryColumns.DATE)));
-                valuesArrayList.add(Float.parseFloat(data.getString(data.getColumnIndex(HistoryColumns.CLOSE))));
-            }
-
-            mLabels = (String[]) labelsArrayList.toArray();
-            mValues = null;
-
-            int i = 0;
-            for (Float f : valuesArrayList) {
-                mValues[i++] = (f != null ? f : f.NaN);
-            }
-
-            Log.i(LOG_TAG, "onLoadFinished mLabels: " + mLabels.toString());
-            Log.i(LOG_TAG, "onLoadFinished mValues: " + mValues.toString());
-            // todo check if this is working
-
-            mChart.notifyDataUpdate();
-        }
 
 
-    }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // todo
-    }
 }
