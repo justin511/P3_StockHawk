@@ -46,7 +46,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(this, QuoteProvider.History.CONTENT_URI,
-                new String[] {HistoryColumns._ID, HistoryColumns.SYMBOL, HistoryColumns.DATE,
+                new String[] {"DISTINCT " + HistoryColumns.SYMBOL, HistoryColumns.DATE,
                         HistoryColumns.CLOSE, HistoryColumns.VOLUME},
                 HistoryColumns.SYMBOL + " = ?",
                 new String[] {mSymbol},
