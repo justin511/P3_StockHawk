@@ -79,7 +79,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             while (data.moveToNext()) {
 
                 //todo format date
-                mLabels[i] =  data.getString(data.getColumnIndex(HistoryColumns.DATE));
+                mLabels[i] =  Utils.getFormattedDate(data.getString(data.getColumnIndex(HistoryColumns.DATE)));
                 Log.i(LOG_TAG, "mLabels: " + i + " " + mLabels[i]);
 
                 mValues[i--] = Float.parseFloat(data.getString(data.getColumnIndex(HistoryColumns.CLOSE)));

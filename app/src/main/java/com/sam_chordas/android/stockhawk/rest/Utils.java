@@ -11,7 +11,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by sam_chordas on 10/8/15.
@@ -180,7 +184,30 @@ public class Utils {
   }
 
 
+  /***
+   * Format date for chart x-axis
+   * @return Date String in format "Mar 09"
+   */
+
+  public static String getFormattedDate(String startDateString) {
+    DateFormat pdf = new SimpleDateFormat("yyyy-MM-dd");
+    DateFormat df = new SimpleDateFormat("MMM d");
+    Date startDate;
+
+//    Log.i("Utils", "startDateString: " + startDateString);
 
 
+    try {
+      startDate = pdf.parse(startDateString);
+
+//      Log.i("Utils", "startDate: " + startDate.toString());
+
+      return df.format(startDate);
+    } catch (ParseException e){
+      e.printStackTrace();
+    }
+
+    return  startDateString;
+  }
 
 }
