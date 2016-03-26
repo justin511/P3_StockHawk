@@ -57,7 +57,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         HistoryColumns.CLOSE, HistoryColumns.VOLUME},
                 HistoryColumns.SYMBOL + " = ?",
                 new String[] {mSymbol},
-                null);
+                HistoryColumns.DATE + "DESC");
     }
 
     @Override
@@ -115,6 +115,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     .setYAxis(false);
 
             mChart.show();
+
+
         }
 
 
