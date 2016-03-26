@@ -15,6 +15,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -193,21 +194,35 @@ public class Utils {
     DateFormat pdf = new SimpleDateFormat("yyyy-MM-dd");
     DateFormat df = new SimpleDateFormat("MMM d");
     Date startDate;
-
 //    Log.i("Utils", "startDateString: " + startDateString);
-
 
     try {
       startDate = pdf.parse(startDateString);
-
 //      Log.i("Utils", "startDate: " + startDate.toString());
-
       return df.format(startDate);
     } catch (ParseException e){
       e.printStackTrace();
     }
-
     return  startDateString;
   }
+
+  /***
+   * Get date to use to query Yahoo's api
+   * @param incrementDate 0 = today; -1 = yesterday; +1 = tomorrow
+   * @return date formatted "yyyy-MM-dd" or "2016-03-26"
+   */
+  public static String getDateRelativeToToday(int incrementDate) {
+    Calendar c = Calendar.getInstance();
+    long currentTime = System.currentTimeMillis();
+    c.setTimeInMillis(currentTime);
+
+    c.add(c.DATE, incrementDate);
+
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    String date = df.format(c.getTime());
+
+    return date;
+  }
+
 
 }

@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.RemoteException;
 import android.util.Log;
+
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
@@ -16,6 +17,7 @@ import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -118,12 +120,15 @@ public class StockTaskService extends GcmTaskService{
       // https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22YHOO%22%20and%20startDate%20%3D%20%222016-03-02%22%20and%20endDate%20%3D%20%222016-03-09%22&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
       // select * from yahoo.finance.historicaldata where symbol = "YHOO" and startDate = "2016-03-02" and endDate = "2016-03-09"
       String stockInput = params.getExtras().getString("symbol");
+
       // todo when tag equals history get correct dates - previous 10 days or so
       // todo are holidays missing? or same price
       try {
         urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\"", "UTF-8"));
-        urlStringBuilder.append(URLEncoder.encode(" and startDate = \"" + "2016-03-10" + "\"", "UTF-8"));
-        urlStringBuilder.append(URLEncoder.encode(" and endDate = \"" + "2016-03-18" + "\"", "UTF-8"));
+        urlStringBuilder.append(URLEncoder.encode(
+                " and startDate = \"" + Utils.getDateRelativeToToday(-10) + "\"", "UTF-8"));
+        urlStringBuilder.append(URLEncoder.encode(
+                " and endDate = \"" + Utils.getDateRelativeToToday(0) + "\"", "UTF-8"));
       } catch (UnsupportedEncodingException e) {
         e.printStackTrace();
       }
