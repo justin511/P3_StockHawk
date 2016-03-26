@@ -24,6 +24,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     private final String LOG_TAG = DetailActivity.class.getSimpleName();
     private static final int CURSOR_LOADER_ID = 1;
+    private static final int NUM_OF_DAYS = 5;
 
     String mSymbol;
     LineChartView mChart;
@@ -57,35 +58,36 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         HistoryColumns.CLOSE, HistoryColumns.VOLUME},
                 HistoryColumns.SYMBOL + " = ?",
                 new String[] {mSymbol},
-                HistoryColumns.DATE + "DESC");
+                HistoryColumns.DATE + " DESC");
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // todo swap
         if (data != null && data.getCount() != 0) {
-
-//            String[] mLabels = {"April 3", "April 4", "April 5", "April 6"};
-//            float[] mValues = {33.0f,33.4f,33.2f,33.4f};
 
             int cursorCount = data.getCount();
 
-            String[] mLabels = new String[cursorCount];
-            float[] mValues = new float[cursorCount];
-
             Log.i(LOG_TAG, "cursor size: " + cursorCount);
 
-            int i = cursorCount - 1;
-            while (data.moveToNext()) {
 
-                //todo format date
-                mLabels[i] =  Utils.getFormattedDate(
+            String[] chartLabels = new String[NUM_OF_DAYS];
+            float[] chartValues = new float[NUM_OF_DAYS];
+
+//            int i = 4;
+//            while (data.moveToNext()) {
+//
+            for (int i = NUM_OF_DAYS - 1; i >= 0; i--) {
+                data.moveToNext();
+
+                chartLabels[i] =  Utils.getFormattedDate(
                         data.getString(data.getColumnIndex(HistoryColumns.DATE)));
-                Log.i(LOG_TAG, "mLabels: " + i + " " + mLabels[i]);
+                Log.i(LOG_TAG, "chartLabels: " + i + " " + chartLabels[i]);
 
-                mValues[i--] = Float.parseFloat(
+                chartValues[i] = Float.parseFloat(
                         data.getString(data.getColumnIndex(HistoryColumns.CLOSE)));
-                Log.i(LOG_TAG, "mValues: " + (i+1) + " " + mValues[i+1]);
+                Log.i(LOG_TAG, "chartValues: " + (i) + " " + chartValues[i]);
+
+
             }
 
 
@@ -94,21 +96,27 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             //todo gridlines for chart
 
             // yellow lines
-            LineSet dataset = new LineSet(mLabels, mValues);
+            LineSet dataset = new LineSet(chartLabels, chartValues);
             dataset.setColor(Color.parseColor("#b3b5bb"))
                     .setFill(Color.parseColor("#2d374c"))
                     .setDotsColor(Color.parseColor("#ffc755"))
                     .setThickness(4)
-                    .endAt(mLabels.length);
+                    .endAt(chartLabels.length);
             mChart.addData(dataset);
 
             // Chart
-            int rangeSmallestToLargest = (int) (Utils.getLargestInArray(mValues)
-                    - Utils.getSmallestInArray(mValues));
+            int rangeSmallestToLargest = Math.round((Utils.getLargestInArray(chartValues)
+                    - Utils.getSmallestInArray(chartValues)));
+
+            Log.i(LOG_TAG, "range: " + rangeSmallestToLargest);
+            Log.i(LOG_TAG, "ceil: " + Math.max(rangeSmallestToLargest/2, 1));
+
+
             mChart.setBorderSpacing(Tools.fromDpToPx(15))
                     .setAxisBorderValues(
-                            (int) Utils.getSmallestInArray(mValues),
-                            (int) Utils.getLargestInArray(mValues) + rangeSmallestToLargest/2)
+                            (int) Utils.getSmallestInArray(chartValues),
+                            (int) Utils.getLargestInArray(chartValues)
+                                    + Math.max(rangeSmallestToLargest / 2, 1))
                     .setYLabels(AxisController.LabelPosition.OUTSIDE)
                     .setLabelsColor(Color.parseColor("#6a84c3"))
                     .setXAxis(false)
@@ -116,9 +124,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
             mChart.show();
 
-
         }
-
 
     }
 
