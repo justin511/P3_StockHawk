@@ -35,8 +35,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         setContentView(R.layout.charts);
 //        getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // add the about fragment
-        if (savedInstanceState == null) {
+//        if (savedInstanceState == null) {
 
             Intent intent = getIntent();
             mSymbol = intent.getExtras().getString("symbol");
@@ -46,7 +45,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
             getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
-        }
+//        }
 
 
     }
@@ -69,13 +68,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
             Log.i(LOG_TAG, "cursor size: " + cursorCount);
 
-
             String[] chartLabels = new String[NUM_OF_DAYS];
             float[] chartValues = new float[NUM_OF_DAYS];
 
-//            int i = 4;
-//            while (data.moveToNext()) {
-//
             for (int i = NUM_OF_DAYS - 1; i >= 0; i--) {
                 data.moveToNext();
 
@@ -86,8 +81,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 chartValues[i] = Float.parseFloat(
                         data.getString(data.getColumnIndex(HistoryColumns.CLOSE)));
                 Log.i(LOG_TAG, "chartValues: " + (i) + " " + chartValues[i]);
-
-
             }
 
 
@@ -107,10 +100,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             // Chart
             int rangeSmallestToLargest = Math.round((Utils.getLargestInArray(chartValues)
                     - Utils.getSmallestInArray(chartValues)));
-
-            Log.i(LOG_TAG, "range: " + rangeSmallestToLargest);
-            Log.i(LOG_TAG, "ceil: " + Math.max(rangeSmallestToLargest/2, 1));
-
 
             mChart.setBorderSpacing(Tools.fromDpToPx(15))
                     .setAxisBorderValues(

@@ -58,39 +58,7 @@ public class ChartCard extends CardController {
         mContext = context;
         mChart = (LineChartView) card.findViewById(R.id.chart1);
         mSymbol = symbol;
-
-
     }
-
-    public void setmLabels(String[] mLabels) {
-        this.mLabels = mLabels;
-    }
-
-    public void setmValues(float[] mValues) {
-        this.mValues = mValues;
-    }
-
-    //    getLoaderManager
-
-//    getParent
-//    getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
-
-
-// todo get cursor data
-
-    // just need to query for date and price
-//    Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-//            new String[] { QuoteColumns.SYMBOL }, QuoteColumns.SYMBOL + "= ?",
-//            new String[] { input.toString().toUpperCase() }, null);   // need to normalize and use uppercase of input
-
-    /*
-    QuoteProvider.History.CONTENT_URI,
-                new String[] {HistoryColumns._ID, HistoryColumns.SYMBOL, HistoryColumns.DATE,
-                    HistoryColumns.CLOSE, HistoryColumns.VOLUME},
-                HistoryColumns.SYMBOL + " = ?",
-                new String[] {"YHOO"},  // todo use mSymbol
-                null);
-     */
 
 
     @Override
