@@ -85,6 +85,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
 
 
+            mChart.dismiss();
 
             //todo gridlines for chart
 

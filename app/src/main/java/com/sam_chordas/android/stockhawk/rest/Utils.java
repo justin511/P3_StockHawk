@@ -49,6 +49,7 @@ public class Utils {
           if (resultsArray != null && resultsArray.length() != 0){
             for (int i = 0; i < resultsArray.length(); i++){
               jsonObject = resultsArray.getJSONObject(i);
+              Log.i(LOG_TAG, "GET RESULTS: " + jsonObject.toString());
               batchOperations.add(buildQuoteBatchOperation(jsonObject));
             }
           }
@@ -98,21 +99,26 @@ public class Utils {
   }
 
   public static String truncateChange(String change, boolean isPercentChange){
-    // substring: start inclusive, end exclusive
-    String sign = change.substring(0,1);  // + or -
-    String percentSign = "";  // % - percent sign
-    if (isPercentChange){
-      percentSign = change.substring(change.length() - 1, change.length());
-      change = change.substring(0, change.length() - 1);
+    // need to handle null case: app has crashed due to result with "ChangeinPercent":null
+    if (change != "null") {
+      // substring: start inclusive, end exclusive
+      String sign = change.substring(0, 1);  // + or -
+      String percentSign = "";  // % - percent sign
+      if (isPercentChange) {
+        percentSign = change.substring(change.length() - 1, change.length());
+        change = change.substring(0, change.length() - 1);
+      }
+      change = change.substring(1, change.length());  // getting just the numbers (without sign or %)
+      double round = (double) Math.round(Double.parseDouble(change) * 100) / 100;   // 2.98 --> 298.0 --> round --> 2.98
+      change = String.format("%.2f", round);
+      StringBuffer changeBuffer = new StringBuffer(change); // 2.98
+      changeBuffer.insert(0, sign); // +2.98
+      changeBuffer.append(percentSign); // +2.98% or +2.98 (if isPercentChange = false)
+      change = changeBuffer.toString();
+      return change;
+    } else {
+      return "Server Error";  //todo use string resource
     }
-    change = change.substring(1, change.length());  // getting just the numbers (without sign or %)
-    double round = (double) Math.round(Double.parseDouble(change) * 100) / 100;   // 2.98 --> 298.0 --> round --> 2.98
-    change = String.format("%.2f", round);
-    StringBuffer changeBuffer = new StringBuffer(change); // 2.98
-    changeBuffer.insert(0, sign); // +2.98
-    changeBuffer.append(percentSign); // +2.98% or +2.98 (if isPercentChange = false)
-    change = changeBuffer.toString();
-    return change;
   }
 
   public static ContentProviderOperation buildQuoteBatchOperation(JSONObject jsonObject){
