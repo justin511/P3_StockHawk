@@ -57,6 +57,7 @@ public class Utils {
       }
     } catch (JSONException e){
       Log.e(LOG_TAG, "String to JSON failed: " + e);
+      //todo a toast to notify user why no stock list populated
     }
     return batchOperations;
   }
