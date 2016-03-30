@@ -41,7 +41,12 @@ public class Utils {
         if (count == 1){
           jsonObject = jsonObject.getJSONObject("results")
               .getJSONObject("quote");
-          batchOperations.add(buildQuoteBatchOperation(jsonObject));//
+          // handle case if symbol is not existent
+          if (jsonObject.getString("LastTradeDate") != "null") {
+            batchOperations.add(buildQuoteBatchOperation(jsonObject));
+          } else {
+            return null;
+          }
         // if there is more than 1 result, data is stored under int within quote
         } else{
           resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");

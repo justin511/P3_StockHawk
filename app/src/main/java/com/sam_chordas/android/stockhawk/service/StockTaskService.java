@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
@@ -34,6 +37,8 @@ public class StockTaskService extends GcmTaskService{
   private Context mContext;
   private StringBuilder mStoredSymbols = new StringBuilder();
   private boolean isUpdate;
+
+  private Handler handler;
 
   public StockTaskService(){}
 
@@ -161,8 +166,21 @@ public class StockTaskService extends GcmTaskService{
           }
           // update database
           if (params.getTag().equals("init") || params.getTag().equals("periodic") || params.getTag().equals("add")) {
-            mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                    Utils.quoteJsonToContentVals(getResponse));
+            if (Utils.quoteJsonToContentVals(getResponse) != null) {
+              mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+                      Utils.quoteJsonToContentVals(getResponse));
+            } else {
+              Handler handler = new Handler(mContext.getMainLooper());
+              handler.post(new Runnable() {
+                @Override
+                public void run() {
+                  Toast toast = Toast.makeText(mContext, "Non-existent stock",
+                              Toast.LENGTH_LONG);
+                  toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
+                  toast.show();
+                }
+              });
+            }
           } else {
             // todo when tag equals history
             mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
