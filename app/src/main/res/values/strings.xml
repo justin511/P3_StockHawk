@@ -17,4 +17,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="server_error">Server Error</string>
+
+    <string name="empty_list">No Stock Information Available</string>
 </resources>

@@ -31,8 +31,8 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
   //private final OnStartDragListener mDragListener;
   private boolean isPercent;
 
-  public QuoteCursorAdapter(Context context, Cursor cursor){
-    super(context, cursor); // super is CursorRecyclerViewAdapter
+  public QuoteCursorAdapter(Context context, Cursor cursor, View emptyView){
+    super(context, cursor, emptyView); // super is CursorRecyclerViewAdapter
     //mDragListener = dragListener;
     mContext = context;
   }

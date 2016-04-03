@@ -75,24 +75,21 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     }
     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    View emptyView = findViewById(R.id.recycler_view_empty);
 
     getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
-    mCursorAdapter = new QuoteCursorAdapter(this, null);  // cursor is null now, but gets swapped later
+    mCursorAdapter = new QuoteCursorAdapter(this, null, emptyView);  // cursor is null now, but gets swapped later
 
     recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
             new RecyclerViewItemClickListener.OnItemClickListener() {
               @Override public void onItemClick(View v, int position) {
-                //TODO:
                 // get historical price data
                 mCursor.moveToPosition(position);   // move to correct row in database
                 String symbol = mCursor.getString(mCursor.getColumnIndex("symbol"));
 //                Log.e(LOG_TAG, "cursor touch after: " + a);
 
-
                 Log.e(LOG_TAG, "cursor: " + mCursor.toString());
-
-
 
                 mServiceIntent.putExtra("tag", "history");
                 mServiceIntent.putExtra("symbol", symbol);
@@ -118,9 +115,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
               .inputType(InputType.TYPE_CLASS_TEXT)
               .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
                 @Override public void onInput(MaterialDialog dialog, CharSequence input) {
-                  // On FAB click, receive user input. Make sure the stock doesn't already exist
-                  // in the DB and proceed accordingly
-                  // TODO: normalize string to all caps so that msft & MSFT isn't considered different
                   Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
                       new String[] { QuoteColumns.SYMBOL }, QuoteColumns.SYMBOL + "= ?",
                       new String[] { input.toString().toUpperCase() }, null);   // need to normalize and use uppercase of input
@@ -224,6 +218,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
+    Log.i(LOG_TAG, "onCreateLoader ran");
+
     // This narrows the return to only the stocks that are most current.
     return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
         new String[]{ QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
