@@ -1,6 +1,9 @@
 package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.sam_chordas.android.stockhawk.data.HistoryColumns;
@@ -234,6 +237,20 @@ public class Utils {
     String date = df.format(c.getTime());
 
     return date;
+  }
+
+  /**
+   * Returns true if the network is available or about to become available.
+   *
+   * @param c Context used to get the ConnectivityManager
+   * @return true if the network is available
+   */
+  public static boolean isNetworkAvailable(Context c) {
+    ConnectivityManager cm = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+    return activeNetwork != null &&
+            activeNetwork.isConnectedOrConnecting();
   }
 
 
