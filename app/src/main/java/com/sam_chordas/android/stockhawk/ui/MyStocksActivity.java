@@ -18,6 +18,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -234,6 +235,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     // todo look into swap cursor; curious about notifyChange in onOptionsItemSelected method
     mCursorAdapter.swapCursor(data);
     mCursor = data;
+    updateEmptyView();
   }
 
   @Override
@@ -241,4 +243,17 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     mCursorAdapter.swapCursor(null);
   }
 
+
+  private void updateEmptyView() {
+    if (mCursorAdapter.getItemCount() == 0) {
+      TextView tv = (TextView) findViewById(R.id.recycler_view_empty);
+      if (tv != null) {
+        int message = R.string.empty_list;
+        if(!Utils.isNetworkAvailable(this)) {
+          message = R.string.empty_list_no_network;
+        }
+        tv.setText(message);
+      }
+    }
+  }
 }

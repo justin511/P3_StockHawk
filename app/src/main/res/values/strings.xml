@@ -18,5 +18,6 @@
 
     <string name="server_error">Server Error</string>
 
-    <string name="empty_list">No Stock Information Available</string>
+    <string name="empty_list">No Stock Information Available.</string>
+    <string name="empty_list_no_network">No Stock Information Available. The network is not available to fetch stock data.</string>
 </resources>
