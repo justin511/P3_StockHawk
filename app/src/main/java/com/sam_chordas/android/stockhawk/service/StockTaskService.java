@@ -3,10 +3,13 @@ package com.sam_chordas.android.stockhawk.service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
+import android.support.annotation.IntDef;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
@@ -14,6 +17,7 @@ import android.widget.Toast;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
+import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
@@ -23,6 +27,8 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.URLEncoder;
 
 /**
@@ -39,6 +45,15 @@ public class StockTaskService extends GcmTaskService{
   private boolean isUpdate;
 
   private Handler handler;
+
+  @Retention(RetentionPolicy.SOURCE)
+  @IntDef({LOCATION_STATUS_OK, LOCATION_STATUS_SERVER_DOWN, LOCATION_STATUS_NON_EXISTENT_STOCK})
+  public @interface LocationStatus {}
+
+  public static final int LOCATION_STATUS_OK = 0;
+  public static final int LOCATION_STATUS_SERVER_DOWN = 1;
+  public static final int LOCATION_STATUS_NON_EXISTENT_STOCK = 2;
+
 
   public StockTaskService(){}
 
@@ -109,9 +124,6 @@ public class StockTaskService extends GcmTaskService{
         }
       }
     } else if (params.getTag().equals("add")){
-
-      // todo need to handle non existent stock
-
       isUpdate = false;
       // get symbol from params.getExtra and build query
       String stockInput = params.getExtras().getString("symbol");
@@ -180,22 +192,38 @@ public class StockTaskService extends GcmTaskService{
                   toast.show();
                 }
               });
+              setLocationStatus(mContext, LOCATION_STATUS_NON_EXISTENT_STOCK); // non-existent stock
             }
           } else {
-            // todo when tag equals history
             mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
                     Utils.historyJsonToContentVals(getResponse));
           }
+          setLocationStatus(mContext, LOCATION_STATUS_OK);
         }catch (RemoteException | OperationApplicationException e){
           Log.e(LOG_TAG, "Error applying batch insert", e);
         }
 
       } catch (IOException e){
         e.printStackTrace();
+        setLocationStatus(mContext, LOCATION_STATUS_SERVER_DOWN);
       }
     }
 
     return result;  // GcmNetworkManager success = 0, failure = 2
+  }
+
+
+  /**
+   * Sets the location status into shared preference.  This function should not be called from
+   * the UI thread because it uses commit to write to the shared preferences.
+   * @param c Context to get the PreferenceManager from.
+   * @param locationStatus The IntDef value to set
+   */
+  private static void setLocationStatus(Context c, @LocationStatus int locationStatus) {
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+    SharedPreferences.Editor spe = sp.edit();
+    spe.putInt(c.getString(R.string.pref_location_status_key), locationStatus);
+    spe.commit();
   }
 
 }
