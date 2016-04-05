@@ -2,13 +2,17 @@ package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.HistoryColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.service.StockTaskService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -252,6 +256,14 @@ public class Utils {
     return activeNetwork != null &&
             activeNetwork.isConnectedOrConnecting();
   }
+
+  @SuppressWarnings("ResourceType")
+  public static @StockTaskService.LocationStatus int getLocationStatus(Context c) {
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+    return sp.getInt(c.getString(R.string.pref_location_status_key),
+            StockTaskService.LOCATION_STATUS_UNKNOWN);
+  }
+
 
 
 }

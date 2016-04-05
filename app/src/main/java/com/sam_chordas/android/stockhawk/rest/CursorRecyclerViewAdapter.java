@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -89,6 +90,7 @@ public abstract class CursorRecyclerViewAdapter <VH extends RecyclerView.ViewHol
       dataIsValid = false;
       notifyDataSetChanged();
     }
+    Log.i(LOG_TAG, "getItemCount: " + getItemCount());
     mEmptyView.setVisibility(getItemCount() == 0 ? View.VISIBLE : View.GONE);
     return oldCursor;
   }

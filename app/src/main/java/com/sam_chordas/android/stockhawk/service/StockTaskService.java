@@ -47,13 +47,13 @@ public class StockTaskService extends GcmTaskService{
   private Handler handler;
 
   @Retention(RetentionPolicy.SOURCE)
-  @IntDef({LOCATION_STATUS_OK, LOCATION_STATUS_SERVER_DOWN, LOCATION_STATUS_NON_EXISTENT_STOCK})
+  @IntDef({LOCATION_STATUS_OK, LOCATION_STATUS_SERVER_DOWN, LOCATION_STATUS_NON_EXISTENT_STOCK, LOCATION_STATUS_UNKNOWN})
   public @interface LocationStatus {}
 
   public static final int LOCATION_STATUS_OK = 0;
   public static final int LOCATION_STATUS_SERVER_DOWN = 1;
   public static final int LOCATION_STATUS_NON_EXISTENT_STOCK = 2;
-
+  public static final int LOCATION_STATUS_UNKNOWN = 3;
 
   public StockTaskService(){}
 
