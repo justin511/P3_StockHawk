@@ -6,6 +6,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -263,6 +265,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     Log.i(LOG_TAG, "updateEmptyView getItemCount: " + mCursorAdapter.getItemCount());
 
     TextView tv = (TextView) findViewById(R.id.recycler_view_empty);
+    RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view);
+    rv.setPadding(0, 0, 0, 0);
 
     if (tv != null) {
       int message = R.string.empty_list;
@@ -286,13 +290,22 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
           message = R.string.empty_list_not_updated;
           tv.setText(message);
           tv.setVisibility(View.VISIBLE);
+          rv.setPadding(0, getPxFromDp(48), 0, 0);
         }
       }
     }
   }
 
 
-
+  private int getPxFromDp(int dp) {
+    Resources r = mContext.getResources();
+    int px = (int) TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            r.getDisplayMetrics()
+    );
+    return px;
+  }
 
 
 
