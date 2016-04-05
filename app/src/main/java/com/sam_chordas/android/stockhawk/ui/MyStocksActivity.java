@@ -129,7 +129,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                               new String[]{input.toString().toUpperCase()}, null);   // need to normalize and use uppercase of input
                       if (c.getCount() != 0) {
                         Toast toast =
-                                Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
+                                Toast.makeText(MyStocksActivity.this, getString(R.string.toast_stock_exists),
                                         Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                         toast.show();
@@ -236,8 +236,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    Log.i(LOG_TAG, "onCreateLoader ran");
-
     // This narrows the return to only the stocks that are most current.
     return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
             new String[]{QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
@@ -277,7 +275,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             message = R.string.empty_list_server_down;
             break;
           case StockTaskService.LOCATION_STATUS_NON_EXISTENT_STOCK:
-            // toast
+            // toast - should be in the else clause below
             break;
           default:
             if (!Utils.isNetworkAvailable(this)) {

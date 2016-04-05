@@ -34,7 +34,8 @@ public class Utils {
 
   public static boolean showPercent = true;
 
-  public static ArrayList quoteJsonToContentVals(String JSON){
+
+  public static ArrayList quoteJsonToContentVals(String JSON, Context c){
     ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
     JSONObject jsonObject = null;
     JSONArray resultsArray = null;
@@ -50,11 +51,12 @@ public class Utils {
               .getJSONObject("quote");
           // handle case if symbol is not existent
           if (jsonObject.getString("LastTradeDate") != "null") {
-            batchOperations.add(buildQuoteBatchOperation(jsonObject));
+            batchOperations.add(buildQuoteBatchOperation(jsonObject, c));
           } else {
             return null;
           }
         // if there is more than 1 result, data is stored under int within quote
+          //todo // handle case if symbol is not existent
         } else{
           resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
 
@@ -62,7 +64,7 @@ public class Utils {
             for (int i = 0; i < resultsArray.length(); i++){
               jsonObject = resultsArray.getJSONObject(i);
               Log.i(LOG_TAG, "GET RESULTS: " + jsonObject.toString());
-              batchOperations.add(buildQuoteBatchOperation(jsonObject));
+              batchOperations.add(buildQuoteBatchOperation(jsonObject, c));
             }
           }
         }
@@ -111,7 +113,7 @@ public class Utils {
     return bidPrice;
   }
 
-  public static String truncateChange(String change, boolean isPercentChange){
+  public static String truncateChange(String change, boolean isPercentChange, Context c){
     // need to handle null case: app has crashed due to result with "ChangeinPercent":null
     if (change != "null") {
       // substring: start inclusive, end exclusive
@@ -130,11 +132,11 @@ public class Utils {
       change = changeBuffer.toString();
       return change;
     } else {
-      return "Server Error";  //todo use string resource
+      return c.getString(R.string.server_error);  //todo use string resource
     }
   }
 
-  public static ContentProviderOperation buildQuoteBatchOperation(JSONObject jsonObject){
+  public static ContentProviderOperation buildQuoteBatchOperation(JSONObject jsonObject, Context c){
     // content://com.sam_chordas.android.stockhawk.data.QuoteProvider.quotes
     ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
             QuoteProvider.Quotes.CONTENT_URI);
@@ -143,8 +145,8 @@ public class Utils {
       builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol"));
       builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
       builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
-          jsonObject.getString("ChangeinPercent"), true));
-      builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
+          jsonObject.getString("ChangeinPercent"), true, c));
+      builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false, c));
       builder.withValue(QuoteColumns.ISCURRENT, 1);
       if (change.charAt(0) == '-'){
         builder.withValue(QuoteColumns.ISUP, 0);

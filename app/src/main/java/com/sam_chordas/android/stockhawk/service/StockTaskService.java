@@ -55,6 +55,7 @@ public class StockTaskService extends GcmTaskService{
   public static final int LOCATION_STATUS_NON_EXISTENT_STOCK = 2;
   public static final int LOCATION_STATUS_UNKNOWN = 3;
 
+
   public StockTaskService(){}
 
   public StockTaskService(Context context){
@@ -178,15 +179,15 @@ public class StockTaskService extends GcmTaskService{
           }
           // update database
           if (params.getTag().equals("init") || params.getTag().equals("periodic") || params.getTag().equals("add")) {
-            if (Utils.quoteJsonToContentVals(getResponse) != null) {
+            if (Utils.quoteJsonToContentVals(getResponse, mContext) != null) {
               mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                      Utils.quoteJsonToContentVals(getResponse));
+                      Utils.quoteJsonToContentVals(getResponse, mContext));
             } else {
               Handler handler = new Handler(mContext.getMainLooper());
               handler.post(new Runnable() {
                 @Override
                 public void run() {
-                  Toast toast = Toast.makeText(mContext, "Non-existent stock",
+                  Toast toast = Toast.makeText(mContext, mContext.getString(R.string.toast_invalid_stock),
                               Toast.LENGTH_LONG);
                   toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                   toast.show();
