@@ -7,6 +7,8 @@
        https://developer.android.com/design/patterns/navigation-drawer.html -->
   <dimen name="navigation_drawer_width">240dp</dimen>
 
+  <!--70 dp * n - 30 dp-->
+  <!--2 x 2 cell min-->
   <dimen name="widget_default_height">110dp</dimen>
   <dimen name="widget_default_width">110dp</dimen>
 

@@ -29,6 +29,8 @@
 
     <string name="pref_location_status_key" translatable="false">loc-status</string>
 
+    <!--Content Descriptions-->
+    <string name="add_stock_fab">Add new stock.</string>
 
 
 </resources>
