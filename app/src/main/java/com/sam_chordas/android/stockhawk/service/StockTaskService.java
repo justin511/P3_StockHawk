@@ -2,6 +2,7 @@ package com.sam_chordas.android.stockhawk.service;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -55,6 +56,8 @@ public class StockTaskService extends GcmTaskService{
   public static final int LOCATION_STATUS_NON_EXISTENT_STOCK = 2;
   public static final int LOCATION_STATUS_UNKNOWN = 3;
 
+  public static final String ACTION_DATA_UPDATED =
+          "com.sam_chordas.android.stockhawk.app.ACTION_DATA_UPDATED";
 
   public StockTaskService(){}
 
@@ -182,6 +185,10 @@ public class StockTaskService extends GcmTaskService{
             if (Utils.quoteJsonToContentVals(getResponse, mContext) != null) {
               mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
                       Utils.quoteJsonToContentVals(getResponse, mContext));
+
+              Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
+              sendBroadcast(dataUpdatedIntent);
+
             } else {
               Handler handler = new Handler(mContext.getMainLooper());
               handler.post(new Runnable() {
