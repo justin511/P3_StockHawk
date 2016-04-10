@@ -86,7 +86,12 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
 //                    setRemoteContentDescription(views, description);
 //                }
 
-//                views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_green);
+
+                if (data.getInt(data.getColumnIndex("is_up")) == 1){
+                        views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_green);
+                } else{
+                        views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_red);
+                }
 
                 views.setTextViewText(R.id.stock_symbol, symbol);
                 views.setTextViewText(R.id.change, change);
