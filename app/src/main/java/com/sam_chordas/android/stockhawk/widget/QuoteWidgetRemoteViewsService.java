@@ -28,13 +28,6 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
             public void onCreate() {
                 Log.i(LOG_TAG, "RemoteViewService: onCreate");
                 // Nothing to do
-                data = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-                        new String[]{QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
-                                QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
-                        QuoteColumns.ISCURRENT + " = ?",
-                        new String[]{"1"},
-                        null);
-
             }
 
             @Override

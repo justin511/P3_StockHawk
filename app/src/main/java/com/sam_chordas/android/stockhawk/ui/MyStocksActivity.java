@@ -228,7 +228,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     if (id == R.id.action_change_units) {
       // this is for changing stock changes from percent value to dollar value
       Utils.showPercent = !Utils.showPercent;
-      // todo curious about notifyChange here
       this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
     }
 
@@ -248,7 +247,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-    // todo look into swap cursor; curious about notifyChange in onOptionsItemSelected method
     mCursorAdapter.swapCursor(data);
     mCursor = data;
     updateEmptyView();

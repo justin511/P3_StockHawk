@@ -13,8 +13,6 @@
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
     <string name="title_activity_detail">DetailActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="server_error">Server Error</string>
 
@@ -31,6 +29,9 @@
 
     <!--Content Descriptions-->
     <string name="add_stock_fab">Add new stock.</string>
+
+
+    <string name="chart_title">5 Day Chart</string>
 
 
 </resources>

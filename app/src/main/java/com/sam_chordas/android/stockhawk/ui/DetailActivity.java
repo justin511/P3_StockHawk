@@ -71,7 +71,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             String[] chartLabels = new String[NUM_OF_DAYS];
             float[] chartValues = new float[NUM_OF_DAYS];
 
-            // todo crashed earlier
 //            data.moveToFirst();
             for (int i = NUM_OF_DAYS - 1; i >= 0; i--) {
                 data.moveToNext();
@@ -122,7 +121,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        // todo
     }
 
 

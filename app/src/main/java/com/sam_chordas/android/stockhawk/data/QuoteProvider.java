@@ -35,7 +35,6 @@ public class QuoteProvider {
     )
     public static final Uri CONTENT_URI = buildUri(Path.QUOTES);
 
-      // todo read up on @InexactContentUri
     @InexactContentUri(
         name = "QUOTE_ID",
         path = Path.QUOTES + "/*",
