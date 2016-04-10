@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.db.chart.Tools;
 import com.db.chart.model.LineSet;
@@ -33,7 +34,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.charts);
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
 
 //        if (savedInstanceState == null) {
 
@@ -124,4 +124,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     }
 
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }
