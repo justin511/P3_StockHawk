@@ -31,6 +31,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 /**
  * Created by sam_chordas on 9/30/15.
@@ -38,7 +39,7 @@ import java.net.URLEncoder;
  * and is used for the initialization and adding task as well.
  */
 public class StockTaskService extends GcmTaskService{
-  private String LOG_TAG = StockTaskService.class.getSimpleName();
+  private final String LOG_TAG = StockTaskService.class.getSimpleName();
 
   private OkHttpClient client = new OkHttpClient();
   private Context mContext;
@@ -48,13 +49,13 @@ public class StockTaskService extends GcmTaskService{
   private Handler handler;
 
   @Retention(RetentionPolicy.SOURCE)
-  @IntDef({LOCATION_STATUS_OK, LOCATION_STATUS_SERVER_DOWN, LOCATION_STATUS_NON_EXISTENT_STOCK, LOCATION_STATUS_UNKNOWN})
-  public @interface LocationStatus {}
+  @IntDef({QUOTE_STATUS_OK, QUOTE_STATUS_SERVER_DOWN, QUOTE_STATUS_NON_EXISTENT_STOCK, QUOTE_STATUS_UNKNOWN})
+  public @interface QuoteStatus {}
 
-  public static final int LOCATION_STATUS_OK = 0;
-  public static final int LOCATION_STATUS_SERVER_DOWN = 1;
-  public static final int LOCATION_STATUS_NON_EXISTENT_STOCK = 2;
-  public static final int LOCATION_STATUS_UNKNOWN = 3;
+  public static final int QUOTE_STATUS_OK = 0;
+  public static final int QUOTE_STATUS_SERVER_DOWN = 1;
+  public static final int QUOTE_STATUS_NON_EXISTENT_STOCK = 2;
+  public static final int QUOTE_STATUS_UNKNOWN = 3;
 
   public static final String ACTION_DATA_UPDATED =
           "com.sam_chordas.android.stockhawk.app.ACTION_DATA_UPDATED";
@@ -182,9 +183,9 @@ public class StockTaskService extends GcmTaskService{
           }
           // update database
           if (params.getTag().equals("init") || params.getTag().equals("periodic") || params.getTag().equals("add")) {
-            if (Utils.quoteJsonToContentVals(getResponse, mContext) != null) {
-              mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                      Utils.quoteJsonToContentVals(getResponse, mContext));
+            ArrayList quoteBatch = Utils.quoteJsonToContentVals(getResponse, mContext);
+            if (quoteBatch != null) {
+              mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY, quoteBatch);
 
               Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
                       .setPackage(mContext.getPackageName());
@@ -201,20 +202,22 @@ public class StockTaskService extends GcmTaskService{
                   toast.show();
                 }
               });
-              setLocationStatus(mContext, LOCATION_STATUS_NON_EXISTENT_STOCK); // non-existent stock
+              setQuoteStatus(mContext, QUOTE_STATUS_NON_EXISTENT_STOCK); // non-existent stock
             }
           } else {
-            mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                    Utils.historyJsonToContentVals(getResponse));
+            ArrayList historyBatch = Utils.historyJsonToContentVals(getResponse);
+            if (historyBatch != null) {
+              mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY, historyBatch);
+            }
           }
-          setLocationStatus(mContext, LOCATION_STATUS_OK);
+          setQuoteStatus(mContext, QUOTE_STATUS_OK);
         }catch (RemoteException | OperationApplicationException e){
           Log.e(LOG_TAG, "Error applying batch insert", e);
         }
 
       } catch (IOException e){
         e.printStackTrace();
-        setLocationStatus(mContext, LOCATION_STATUS_SERVER_DOWN);
+        setQuoteStatus(mContext, QUOTE_STATUS_SERVER_DOWN);
       }
     }
 
@@ -228,7 +231,7 @@ public class StockTaskService extends GcmTaskService{
    * @param c Context to get the PreferenceManager from.
    * @param locationStatus The IntDef value to set
    */
-  private static void setLocationStatus(Context c, @LocationStatus int locationStatus) {
+  private static void setQuoteStatus(Context c, @QuoteStatus int locationStatus) {
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
     SharedPreferences.Editor spe = sp.edit();
     spe.putInt(c.getString(R.string.pref_location_status_key), locationStatus);

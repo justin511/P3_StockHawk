@@ -24,22 +24,23 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by sam_chordas on 10/8/15.
  */
 public class Utils {
 
-  private static String LOG_TAG = Utils.class.getSimpleName();
+  private static final String LOG_TAG = Utils.class.getSimpleName();
 
   public static boolean showPercent = true;
 
 
   public static ArrayList quoteJsonToContentVals(String JSON, Context c){
     ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
-    JSONObject jsonObject = null;
-    JSONArray resultsArray = null;
-    Log.i(LOG_TAG, "GET FB: " +JSON);
+    JSONObject jsonObject;
+    JSONArray resultsArray;
+//    Log.i(LOG_TAG, "GET FB: " +JSON);
     try{
       jsonObject = new JSONObject(JSON);
       if (jsonObject != null && jsonObject.length() != 0){
@@ -49,14 +50,13 @@ public class Utils {
         if (count == 1){
           jsonObject = jsonObject.getJSONObject("results")
               .getJSONObject("quote");
-          // handle case if symbol is not existent
-          if (jsonObject.getString("LastTradeDate") != "null") {
+          // handle case if symbol is not existent. this occurs when adding new stock (count == 1)
+          if (!jsonObject.getString("LastTradeDate").equals("null")) {
             batchOperations.add(buildQuoteBatchOperation(jsonObject, c));
           } else {
             return null;
           }
         // if there is more than 1 result, data is stored under int within quote
-          //todo // handle case if symbol is not existent
         } else{
           resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
 
@@ -71,16 +71,14 @@ public class Utils {
       }
     } catch (JSONException e){
       Log.e(LOG_TAG, "String to JSON failed: " + e);
-      //todo a toast to notify user why no stock list populated
     }
     return batchOperations;
   }
 
-  // todo create historyJsonToContentVals method
   public static ArrayList historyJsonToContentVals(String JSON) {
     ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
-    JSONObject jsonObject = null;
-    JSONArray resultsArray = null;
+    JSONObject jsonObject;
+    JSONArray resultsArray;
 //    Log.i(LOG_TAG, "GET historyJson: " +JSON);
     try {
       jsonObject = new JSONObject(JSON);
@@ -115,7 +113,7 @@ public class Utils {
 
   public static String truncateChange(String change, boolean isPercentChange, Context c){
     // need to handle null case: app has crashed due to result with "ChangeinPercent":null
-    if (change != "null") {
+    if (!change.equals("null")) {
       // substring: start inclusive, end exclusive
       String sign = change.substring(0, 1);  // + or -
       String percentSign = "";  // % - percent sign
@@ -132,7 +130,7 @@ public class Utils {
       change = changeBuffer.toString();
       return change;
     } else {
-      return c.getString(R.string.server_error);  //todo use string resource
+      return c.getString(R.string.server_error);
     }
   }
 
@@ -161,7 +159,6 @@ public class Utils {
   }
 
 
-  // todo create historyJsonToContentVals method
   public static ContentProviderOperation buildHistoryBatchOperation(JSONObject jsonObject) {
     ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
             QuoteProvider.History.CONTENT_URI);
@@ -178,8 +175,8 @@ public class Utils {
 
   /***
    * Used in ChartCard class to set appropriate max & min graph limits
-   * @param numbers
-   * @return
+   * @param numbers list of floats
+   * @return the largest float
    */
   public static float getLargestInArray(float[] numbers) {
     float largest = numbers[0];
@@ -213,7 +210,7 @@ public class Utils {
 
   public static String getFormattedDate(String startDateString) {
     DateFormat pdf = new SimpleDateFormat("yyyy-MM-dd");
-    DateFormat df = new SimpleDateFormat("MMM d");
+    DateFormat df = new SimpleDateFormat("MMM d", Locale.US);
     Date startDate;
 //    Log.i("Utils", "startDateString: " + startDateString);
 
@@ -237,12 +234,10 @@ public class Utils {
     long currentTime = System.currentTimeMillis();
     c.setTimeInMillis(currentTime);
 
-    c.add(c.DATE, incrementDate);
+    c.add(Calendar.DATE, incrementDate);
 
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    String date = df.format(c.getTime());
-
-    return date;
+    return df.format(c.getTime());
   }
 
   /**
@@ -260,10 +255,11 @@ public class Utils {
   }
 
   @SuppressWarnings("ResourceType")
-  public static @StockTaskService.LocationStatus int getLocationStatus(Context c) {
+  public static @StockTaskService.QuoteStatus
+  int getLocationStatus(Context c) {
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
     return sp.getInt(c.getString(R.string.pref_location_status_key),
-            StockTaskService.LOCATION_STATUS_UNKNOWN);
+            StockTaskService.QUOTE_STATUS_UNKNOWN);
   }
 
 

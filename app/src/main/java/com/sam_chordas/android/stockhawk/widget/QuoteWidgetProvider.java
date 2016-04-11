@@ -2,15 +2,14 @@ package com.sam_chordas.android.stockhawk.widget;
 
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.support.v4.app.TaskStackBuilder;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.support.v4.app.TaskStackBuilder;
 import android.widget.RemoteViews;
 
 import com.sam_chordas.android.stockhawk.R;
@@ -56,9 +55,9 @@ public class QuoteWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        Log.i(LOG_TAG, "onReceive called");
+//        Log.i(LOG_TAG, "onReceive called");
         if(StockTaskService.ACTION_DATA_UPDATED.equals(intent.getAction())) {
-            Log.i(LOG_TAG, "onReceive starts service");
+//            Log.i(LOG_TAG, "onReceive starts service");
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetId = appWidgetManager.getAppWidgetIds(
                     new ComponentName(context, getClass()));

@@ -142,6 +142,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         mServiceIntent.putExtra("symbol", input.toString().toUpperCase());    // need to normalize and use uppercase of input
                         startService(mServiceIntent);
                       }
+                      c.close();
                     }
                   })
                   .show();
@@ -220,9 +221,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     int id = item.getItemId();
 
     //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      return true;
-    }
+//    if (id == R.id.action_settings) {
+//      return true;
+//    }
 
     if (id == R.id.action_change_units) {
       // this is for changing stock changes from percent value to dollar value
@@ -267,12 +268,12 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     if (tv != null) {
       int message = R.string.empty_list;
       if (mCursorAdapter.getItemCount() == 0) {
-        @StockTaskService.LocationStatus int location = Utils.getLocationStatus(mContext);
+        @StockTaskService.QuoteStatus int location = Utils.getLocationStatus(mContext);
         switch (location) {
-          case StockTaskService.LOCATION_STATUS_SERVER_DOWN:
+          case StockTaskService.QUOTE_STATUS_SERVER_DOWN:
             message = R.string.empty_list_server_down;
             break;
-          case StockTaskService.LOCATION_STATUS_NON_EXISTENT_STOCK:
+          case StockTaskService.QUOTE_STATUS_NON_EXISTENT_STOCK:
             // toast - should be in the else clause below
             break;
           default:
