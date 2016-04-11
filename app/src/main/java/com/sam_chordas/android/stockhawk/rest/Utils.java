@@ -63,7 +63,7 @@ public class Utils {
           if (resultsArray != null && resultsArray.length() != 0){
             for (int i = 0; i < resultsArray.length(); i++){
               jsonObject = resultsArray.getJSONObject(i);
-              Log.i(LOG_TAG, "GET RESULTS: " + jsonObject.toString());
+//              Log.i(LOG_TAG, "GET RESULTS: " + jsonObject.toString());
               batchOperations.add(buildQuoteBatchOperation(jsonObject, c));
             }
           }
@@ -81,7 +81,7 @@ public class Utils {
     ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
     JSONObject jsonObject = null;
     JSONArray resultsArray = null;
-    Log.i(LOG_TAG, "GET historyJson: " +JSON);
+//    Log.i(LOG_TAG, "GET historyJson: " +JSON);
     try {
       jsonObject = new JSONObject(JSON);
       if (jsonObject != null && jsonObject.length() != 0) {

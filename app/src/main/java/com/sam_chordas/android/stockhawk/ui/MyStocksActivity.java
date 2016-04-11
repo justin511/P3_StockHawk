@@ -16,7 +16,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
@@ -96,7 +95,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 String symbol = mCursor.getString(mCursor.getColumnIndex("symbol"));
 //                Log.e(LOG_TAG, "cursor touch after: " + a);
 
-                Log.e(LOG_TAG, "cursor: " + mCursor.toString());
+//                Log.e(LOG_TAG, "cursor: " + mCursor.toString());
 
                 mServiceIntent.putExtra("tag", "history");
                 mServiceIntent.putExtra("symbol", symbol);
@@ -259,7 +258,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
 
   private void updateEmptyView() {
-    Log.i(LOG_TAG, "updateEmptyView getItemCount: " + mCursorAdapter.getItemCount());
+//    Log.i(LOG_TAG, "updateEmptyView getItemCount: " + mCursorAdapter.getItemCount());
 
     TextView tv = (TextView) findViewById(R.id.recycler_view_empty);
     RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view);

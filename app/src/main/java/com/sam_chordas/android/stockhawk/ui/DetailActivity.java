@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.db.chart.Tools;
@@ -66,7 +65,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
             int cursorCount = data.getCount();
 
-            Log.i(LOG_TAG, "cursor size: " + cursorCount);
+//            Log.i(LOG_TAG, "cursor size: " + cursorCount);
 
             String[] chartLabels = new String[NUM_OF_DAYS];
             float[] chartValues = new float[NUM_OF_DAYS];
@@ -77,11 +76,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
                 chartLabels[i] =  Utils.getFormattedDate(
                         data.getString(data.getColumnIndex(HistoryColumns.DATE)));
-                Log.i(LOG_TAG, "chartLabels: " + i + " " + chartLabels[i]);
+//                Log.i(LOG_TAG, "chartLabels: " + i + " " + chartLabels[i]);
 
                 chartValues[i] = Float.parseFloat(
                         data.getString(data.getColumnIndex(HistoryColumns.CLOSE)));
-                Log.i(LOG_TAG, "chartValues: " + (i) + " " + chartValues[i]);
+//                Log.i(LOG_TAG, "chartValues: " + (i) + " " + chartValues[i]);
             }
 
 

@@ -166,7 +166,7 @@ public class StockTaskService extends GcmTaskService{
 
     if (urlStringBuilder != null){
       urlString = urlStringBuilder.toString();
-      Log.e(LOG_TAG, "URL String: " + urlString); // debug purpose
+//      Log.i(LOG_TAG, "URL String: " + urlString); // debug purpose
 
       try{
         getResponse = fetchData(urlString);

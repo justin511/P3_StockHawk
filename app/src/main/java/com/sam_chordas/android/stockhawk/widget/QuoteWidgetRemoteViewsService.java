@@ -3,7 +3,6 @@ package com.sam_chordas.android.stockhawk.widget;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
-import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -26,13 +25,13 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
 
             @Override
             public void onCreate() {
-                Log.i(LOG_TAG, "RemoteViewService: onCreate");
+//                Log.i(LOG_TAG, "RemoteViewService: onCreate");
                 // Nothing to do
             }
 
             @Override
             public void onDataSetChanged() {
-                Log.i(LOG_TAG, "RemoteViewService: onDataSetChanged");
+//                Log.i(LOG_TAG, "RemoteViewService: onDataSetChanged");
                 if (data != null) {
                     data.close();
                 }
@@ -52,7 +51,7 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
 
             @Override
             public void onDestroy() {
-                Log.i(LOG_TAG, "RemoteViewService: onDestroy");
+//                Log.i(LOG_TAG, "RemoteViewService: onDestroy");
                 if (data != null) {
                     data.close();
                     data = null;
@@ -66,7 +65,7 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
 
             @Override
             public RemoteViews getViewAt(int position) {
-                Log.i(LOG_TAG, "RemoteViewService: getViewAt");
+//                Log.i(LOG_TAG, "RemoteViewService: getViewAt");
                 if (position == AdapterView.INVALID_POSITION ||
                         data == null || !data.moveToPosition(position)) {
                     return null;
