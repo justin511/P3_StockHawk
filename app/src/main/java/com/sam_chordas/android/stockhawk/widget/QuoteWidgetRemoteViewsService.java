@@ -88,6 +88,8 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
 
                 views.setTextViewText(R.id.stock_symbol, symbol);
                 views.setTextViewText(R.id.change, change);
+                views.setContentDescription(R.id.change,
+                        getString(R.string.a11y_percent_change, change));
 
                 return views;
             }

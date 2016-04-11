@@ -52,7 +52,10 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     viewHolder.symbol.setText(symbol);
 //    viewHolder.symbol.setContentDescription(symbol);
 
-    viewHolder.bidPrice.setText(cursor.getString(cursor.getColumnIndex("bid_price")));
+    String bidPrice = cursor.getString(cursor.getColumnIndex("bid_price"));
+    viewHolder.bidPrice.setText(bidPrice);
+    viewHolder.bidPrice.setContentDescription(mContext.getString(R.string.a11y_price, bidPrice));
+
     int sdk = Build.VERSION.SDK_INT;
     if (cursor.getInt(cursor.getColumnIndex("is_up")) == 1){
       if (sdk < Build.VERSION_CODES.JELLY_BEAN){
@@ -72,9 +75,13 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
       }
     }
     if (Utils.showPercent){
-      viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("percent_change")));
+      String percentChange = cursor.getString(cursor.getColumnIndex("percent_change"));
+      viewHolder.change.setText(percentChange);
+      viewHolder.change.setContentDescription(mContext.getString(R.string.a11y_percent_change, percentChange));
     } else{
-      viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("change")));
+      String priceChange = cursor.getString(cursor.getColumnIndex("change"));
+      viewHolder.change.setText(priceChange);
+      viewHolder.change.setContentDescription(mContext.getString(R.string.a11y_price_change, priceChange));
     }
   }
 

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">Stock Hawk</string>
 
     <string name="action_example">Example action</string>
@@ -27,8 +27,14 @@
 
     <string name="pref_location_status_key" translatable="false">loc-status</string>
 
+    <!-- A11y -->
     <!--Content Descriptions-->
     <string name="add_stock_fab">Add new stock.</string>
+    <string name="a11y_price">Price: <xliff:g id="price">%1$s</xliff:g></string>
+    <string name="a11y_percent_change">Percent change: <xliff:g id="percent_change">%1$s</xliff:g></string>
+    <string name="a11y_price_change">Price change: <xliff:g id="price_change">%1$s</xliff:g></string>
+
+
 
 
     <string name="chart_title">5 Day Chart</string>
