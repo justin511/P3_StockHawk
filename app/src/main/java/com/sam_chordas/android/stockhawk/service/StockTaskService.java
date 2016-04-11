@@ -190,7 +190,7 @@ public class StockTaskService extends GcmTaskService{
               Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
                       .setPackage(mContext.getPackageName());
               mContext.sendBroadcast(dataUpdatedIntent);
-
+              setQuoteStatus(mContext, QUOTE_STATUS_OK);
             } else {
               Handler handler = new Handler(mContext.getMainLooper());
               handler.post(new Runnable() {
@@ -202,15 +202,15 @@ public class StockTaskService extends GcmTaskService{
                   toast.show();
                 }
               });
-              setQuoteStatus(mContext, QUOTE_STATUS_NON_EXISTENT_STOCK); // non-existent stock
             }
           } else {
             ArrayList historyBatch = Utils.historyJsonToContentVals(getResponse);
             if (historyBatch != null) {
               mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY, historyBatch);
+              setQuoteStatus(mContext, QUOTE_STATUS_OK);
             }
           }
-          setQuoteStatus(mContext, QUOTE_STATUS_OK);
+
         }catch (RemoteException | OperationApplicationException e){
           Log.e(LOG_TAG, "Error applying batch insert", e);
         }

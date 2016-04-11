@@ -256,7 +256,7 @@ public class Utils {
 
   @SuppressWarnings("ResourceType")
   public static @StockTaskService.QuoteStatus
-  int getLocationStatus(Context c) {
+  int getQuoteStatus(Context c) {
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
     return sp.getInt(c.getString(R.string.pref_location_status_key),
             StockTaskService.QUOTE_STATUS_UNKNOWN);
