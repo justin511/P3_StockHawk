@@ -38,10 +38,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         Intent intent = getIntent();
         mSymbol = intent.getExtras().getString("symbol");
 
-        Intent serviceIntent = new Intent(this, StockIntentService.class);
-        serviceIntent.putExtra("tag", "history");
-        serviceIntent.putExtra("symbol", mSymbol);
-        startService(serviceIntent);
+        if (savedInstanceState == null) {
+            Intent serviceIntent = new Intent(this, StockIntentService.class);
+            serviceIntent.putExtra("tag", "history");
+            serviceIntent.putExtra("symbol", mSymbol);
+            startService(serviceIntent);
+        }
 
         mChart = (LineChartView) findViewById(R.id.chart1);
 
