@@ -19,6 +19,7 @@ import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.HistoryColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
+import com.sam_chordas.android.stockhawk.service.StockIntentService;
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -34,19 +35,19 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.charts);
 
-//        if (savedInstanceState == null) {
+        Intent intent = getIntent();
+        mSymbol = intent.getExtras().getString("symbol");
 
-            Intent intent = getIntent();
-            mSymbol = intent.getExtras().getString("symbol");
-            mChart = (LineChartView) findViewById(R.id.chart1);
+        Intent serviceIntent = new Intent(this, StockIntentService.class);
+        serviceIntent.putExtra("tag", "history");
+        serviceIntent.putExtra("symbol", mSymbol);
+        startService(serviceIntent);
 
-            setTitle(mSymbol);
+        mChart = (LineChartView) findViewById(R.id.chart1);
 
-            getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+        setTitle(mSymbol);
 
-//        }
-
-
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
     }
 
     @Override
@@ -62,18 +63,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null && data.getCount() != 0) {
-
-            int cursorCount = data.getCount();
-
 //            Log.i(LOG_TAG, "cursor size: " + cursorCount);
-
             String[] chartLabels = new String[NUM_OF_DAYS];
             float[] chartValues = new float[NUM_OF_DAYS];
 
             data.moveToFirst();
             for (int i = NUM_OF_DAYS - 1; i >= 0; i--) {
-                data.moveToNext();
-
                 chartLabels[i] =  Utils.getFormattedDate(
                         data.getString(data.getColumnIndex(HistoryColumns.DATE)));
 //                Log.i(LOG_TAG, "chartLabels: " + i + " " + chartLabels[i]);
@@ -81,9 +76,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 chartValues[i] = Float.parseFloat(
                         data.getString(data.getColumnIndex(HistoryColumns.CLOSE)));
 //                Log.i(LOG_TAG, "chartValues: " + (i) + " " + chartValues[i]);
+                data.moveToNext();
             }
-
-
 
             mChart.dismiss();
 

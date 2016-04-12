@@ -3,6 +3,7 @@ package com.sam_chordas.android.stockhawk.widget;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
+import android.os.Bundle;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -89,6 +90,13 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
                 views.setTextViewText(R.id.change, change);
                 views.setContentDescription(R.id.change,
                         getString(R.string.a11y_percent_change, change));
+
+                Bundle extras = new Bundle();
+                extras.putString("symbol", symbol);
+
+                Intent fillInIntent = new Intent();
+                fillInIntent.putExtras(extras);
+                views.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);
 
                 return views;
             }

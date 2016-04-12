@@ -85,9 +85,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 // get historical price data
                 mCursor.moveToPosition(position);   // move to correct row in database
                 String symbol = mCursor.getString(mCursor.getColumnIndex("symbol"));
-                mServiceIntent.putExtra("tag", "history");
-                mServiceIntent.putExtra("symbol", symbol);
-                startService(mServiceIntent);
+//                mServiceIntent.putExtra("tag", "history");
+//                mServiceIntent.putExtra("symbol", symbol);
+//                startService(mServiceIntent);
 
                 // do something on item click
                 Intent intent = new Intent(getBaseContext(), DetailActivity.class);
