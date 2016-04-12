@@ -16,7 +16,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -222,20 +221,20 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         message = R.string.empty_list_not_updated;
         tv.setText(message);
         tv.setVisibility(View.VISIBLE);
-        rv.setPadding(0, getPxFromDp(48), 0, 0);
+        rv.setPadding(0, (int) fromDpToPx(48f), 0, 0);
     }
   }
 
 
 
-  private int getPxFromDp(int dp) {
-    Resources r = mContext.getResources();
-    int px = (int) TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            r.getDisplayMetrics()
-    );
-    return px;
+  /**
+   * Converts dp size into pixels.
+   *
+   * @param dp   dp size to get converted
+   * @return Pixel size
+   */
+  public static float fromDpToPx(float dp) {
+    return dp * Resources.getSystem().getDisplayMetrics().density;
   }
 
 
